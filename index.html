@@ -60,62 +60,38 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
 .toast.error { background: #C53030; }
 .toast.warn { background: #d69e2e; }
 .toast.show { transform: translateX(-50%) translateY(0); }
-
-/* شاشة القفل */
 .lock-screen { position: fixed; inset: 0; background: #1F3864; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 30px; color: white; text-align: center; }
 .lock-screen h2 { font-size: 24px; margin-bottom: 8px; font-weight: 700; }
-.lock-screen .sub { font-size: 13px; opacity: 0.75; margin-bottom: 6px; line-height: 1.6; }
+.lock-screen .sub { font-size: 13px; opacity: 0.75; margin-bottom: 20px; line-height: 1.6; }
 .lock-icon { font-size: 64px; margin-bottom: 20px; }
 .lock-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 24px; width: 100%; max-width: 340px; }
 .lock-input { width: 100%; padding: 14px; border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-size: 16px; font-family: inherit; text-align: center; margin-bottom: 12px; }
 .lock-input::placeholder { color: rgba(255,255,255,0.4); }
 .lock-input:focus { outline: none; border-color: #4FC3F7; }
 .btn-lock { width: 100%; padding: 14px; background: #4FC3F7; color: #1F3864; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.btn-lock:disabled { opacity: 0.5; cursor: not-allowed; }
 .lock-err { color: #FC8181; font-size: 13px; margin-top: 10px; min-height: 20px; }
 .blocked-msg { background: rgba(197,48,48,0.3); border: 1px solid #FC8181; border-radius: 10px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; display: none; }
 .expired-msg { background: rgba(197,48,48,0.3); border: 1px solid #FC8181; border-radius: 10px; padding: 14px; margin-bottom: 16px; font-size: 14px; line-height: 1.7; display: none; }
-
-/* شاشة الإعداد */
-.setup-screen { position: fixed; inset: 0; background: #2d3748; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; padding: 30px; color: white; text-align: center; }
-.setup-screen h2 { font-size: 20px; margin-bottom: 8px; }
-.setup-screen p { font-size: 13px; opacity: 0.75; margin-bottom: 20px; line-height: 1.6; }
-.setup-input { width: 100%; padding: 12px 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-size: 13px; font-family: inherit; margin-bottom: 10px; direction: ltr; }
-.setup-input::placeholder { color: rgba(255,255,255,0.4); }
-.setup-input:focus { outline: none; border-color: #4FC3F7; }
-.btn-save { width: 100%; padding: 13px; background: #4FC3F7; color: #1F3864; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 </style>
 </head>
 <body>
 
-<!-- ========== شاشة القفل ========== -->
+<!-- شاشة القفل -->
 <div class="lock-screen" id="lockScreen">
   <div class="lock-icon">🔐</div>
   <h2>نظام حصر الأصول</h2>
-  <p class="sub">المواني والمطارات</p>
-
+  <p class="sub">المواني والمطارات<br>أدخل كلمة المرور للدخول</p>
   <div class="lock-box">
-    <div class="blocked-msg" id="blockedMsg">
-      ⛔ تم حظر هذا الجهاز<br>بسبب تجاوز عدد المحاولات<br>تواصل مع مدير النظام
-    </div>
-    <div class="expired-msg" id="expiredMsg">
-      ⛔ انتهت صلاحية هذا التطبيق<br>تواصل مع مدير النظام
-    </div>
+    <div class="blocked-msg" id="blockedMsg">⛔ تم حظر هذا الجهاز بسبب تجاوز عدد المحاولات<br>تواصل مع مدير النظام</div>
+    <div class="expired-msg" id="expiredMsg">⛔ انتهت صلاحية هذا التطبيق<br>تواصل مع مدير النظام</div>
     <input class="lock-input" id="passInput" type="password" placeholder="أدخل كلمة المرور" maxlength="30">
     <button class="btn-lock" id="loginBtn" onclick="checkAuth()">دخول ←</button>
     <div class="lock-err" id="lockErr"></div>
   </div>
 </div>
 
-<!-- ========== شاشة الإعداد ========== -->
-<div class="setup-screen" id="setupScreen" style="display:none">
-  <div style="font-size:40px;margin-bottom:12px">⚙️</div>
-  <h2>إعداد النظام</h2>
-  <p>أدخل رابط Google Apps Script<br>مرة واحدة فقط على هذا الجهاز</p>
-  <input class="setup-input" id="scriptUrlInput" type="url" placeholder="https://script.google.com/macros/s/..."/>
-  <button class="btn-save" onclick="saveScriptUrl()">حفظ والبدء ✓</button>
-</div>
-
-<!-- ========== الشريط العلوي ========== -->
+<!-- الشريط العلوي -->
 <div class="offline-banner" id="offlineBanner">
   📴 وضع أوفلاين — البيانات محفوظة محلياً
   <span id="pendingCount" class="pending-badge">0</span>
@@ -300,38 +276,34 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
 
 <script>
 // ============================================================
-// ⚠️ هذا القسم أنت فقط تعدّله
+// ⚙️ الإعدادات — أنت فقط تعدّل هذا القسم
 // ============================================================
 const CONFIG = {
-  // كلمة المرور — غيّرها متى تريد وسيطلبها من الجميع من جديد
-  PASSWORD: 'Omar@2026',
-  // تاريخ انتهاء الصلاحية — بعده يقفل التطبيق عند الجميع
-  EXPIRY_DATE: '2026-12-31',
-  // عدد المحاولات الخاطئة قبل حظر الجهاز
+  PASSWORD:     'Omar@2026',
+  EXPIRY_DATE:  '2026-12-31',
   MAX_ATTEMPTS: 5,
-  // رقم إصدار كلمة المرور — ازد الرقم 1 عند تغيير كلمة المرور
-  // هذا يجبر الجميع على إعادة الدخول بالكلمة الجديدة
-  PASS_VERSION: 1
+  PASS_VERSION: 1,
+  // رابط Apps Script مضمّن — الفني لا يراه
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyDKT4sjaCOCclmIqf5ZC2BFQh0lVO-UjjOhbXSgBp0P96_V8C0bIm1IvqjKER4FQ1w/exec'
 };
 // ============================================================
 
-const SCRIPT_KEY   = 'assetScriptUrl';
-const PENDING_KEY  = 'pendingAssets';
-const ATTEMPTS_KEY = 'authAttempts';
-const AUTH_KEY     = 'authOk_v';      // سيُضاف رقم الإصدار
+const PENDING_KEY  = 'pendingAssets_v2';
+const ATTEMPTS_KEY = 'authAttempts_v2';
+const AUTH_KEY     = 'authOk_v';
 
+// ---- تهيئة ----
 window.onload = function() {
-  // التحقق من انتهاء الصلاحية
+  // فحص انتهاء الصلاحية
   const today = new Date().toISOString().split('T')[0];
   if (today > CONFIG.EXPIRY_DATE) {
     document.getElementById('expiredMsg').style.display = 'block';
     document.getElementById('passInput').disabled = true;
     document.getElementById('loginBtn').disabled = true;
-    document.getElementById('loginBtn').style.opacity = '0.4';
     return;
   }
 
-  // التحقق من الحظر
+  // فحص الحظر
   const attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0');
   if (attempts >= CONFIG.MAX_ATTEMPTS) {
     document.getElementById('blockedMsg').style.display = 'block';
@@ -340,31 +312,24 @@ window.onload = function() {
     return;
   }
 
-  // التحقق من الجلسة — بإصدار كلمة المرور
-  const authKey = AUTH_KEY + CONFIG.PASS_VERSION;
-  if (sessionStorage.getItem(authKey) === '1') {
+  // فحص الجلسة
+  if (sessionStorage.getItem(AUTH_KEY + CONFIG.PASS_VERSION) === '1') {
     showApp();
     return;
   }
 
-  // إظهار شاشة القفل
-  document.getElementById('passInput').focus();
+  // تفعيل Enter
   document.getElementById('passInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') checkAuth();
   });
-
-  window.addEventListener('online',  onOnline);
-  window.addEventListener('offline', onOffline);
-  if (!navigator.onLine) onOffline();
-  updatePendingBadge();
+  document.getElementById('passInput').focus();
 };
 
 function checkAuth() {
   const pass = document.getElementById('passInput').value;
   if (pass === CONFIG.PASSWORD) {
     localStorage.removeItem(ATTEMPTS_KEY);
-    const authKey = AUTH_KEY + CONFIG.PASS_VERSION;
-    sessionStorage.setItem(authKey, '1');
+    sessionStorage.setItem(AUTH_KEY + CONFIG.PASS_VERSION, '1');
     showApp();
   } else {
     const attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0') + 1;
@@ -376,7 +341,7 @@ function checkAuth() {
       document.getElementById('loginBtn').disabled = true;
       document.getElementById('lockErr').textContent = '';
     } else {
-      document.getElementById('lockErr').textContent = '❌ كلمة المرور غير صحيحة — باقي ' + left + ' محاولات';
+      document.getElementById('lockErr').textContent = '❌ كلمة المرور خاطئة — باقي ' + left + ' محاولات';
       document.getElementById('passInput').value = '';
       document.getElementById('passInput').focus();
     }
@@ -385,24 +350,36 @@ function checkAuth() {
 
 function showApp() {
   document.getElementById('lockScreen').style.display = 'none';
-  const url = localStorage.getItem(SCRIPT_KEY);
-  if (!url) {
-    document.getElementById('setupScreen').style.display = 'flex';
-  }
   window.addEventListener('online',  onOnline);
   window.addEventListener('offline', onOffline);
   if (!navigator.onLine) onOffline();
   updatePendingBadge();
   updateProgress();
+  // طلب إذن GPS تلقائياً
+  requestGPSPermission();
 }
 
-function saveScriptUrl() {
-  const url = document.getElementById('scriptUrlInput').value.trim();
-  if (!url.startsWith('https://script.google.com')) {
-    showToast('الرابط غير صحيح', 'error'); return;
-  }
-  localStorage.setItem(SCRIPT_KEY, url);
-  document.getElementById('setupScreen').style.display = 'none';
+// ---- طلب إذن GPS تلقائياً عند فتح التطبيق ----
+function requestGPSPermission() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      // تم منح الإذن — التقط الموقع مباشرة
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      document.getElementById('gpsCoords').value = lat + ', ' + lng;
+      document.getElementById('gpsStatus').textContent = '✅ تم تحديد موقعك تلقائياً';
+      document.getElementById('gpsStatus').className = 'gps-status ok';
+      document.getElementById('gpsBtn').textContent = '✅';
+    },
+    function(err) {
+      // رُفض أو خطأ — الزر لا يزال متاحاً للمحاولة اليدوية
+      if (err.code === 1) {
+        document.getElementById('gpsStatus').textContent = '⚠️ اضغط الزر وسمح بالموقع عند الطلب';
+      }
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
 }
 
 // ---- الشبكة ----
@@ -422,15 +399,22 @@ async function syncPending() {
   const pending = getPending();
   if (pending.length === 0) return;
   document.getElementById('syncBanner').classList.add('show');
-  const scriptUrl = localStorage.getItem(SCRIPT_KEY);
   let synced = 0;
   for (let i = 0; i < pending.length; i++) {
     try {
-      await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(pending[i]) });
+      await fetch(CONFIG.SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(pending[i])
+      });
       synced++;
     } catch(e) { break; }
   }
-  if (synced > 0) { savePending(pending.slice(synced)); updatePendingBadge(); showToast('✅ تمت مزامنة ' + synced + ' سجل', 'ok'); }
+  if (synced > 0) {
+    savePending(pending.slice(synced));
+    updatePendingBadge();
+    showToast('✅ تمت مزامنة ' + synced + ' سجل', 'ok');
+  }
   document.getElementById('syncBanner').classList.remove('show');
 }
 
@@ -448,10 +432,15 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = Math.round((filled/fields.length)*100) + '%';
 }
 
-// ---- GPS ----
+// ---- GPS يدوي ----
 function getGPS() {
-  const btn = document.getElementById('gpsBtn'), status = document.getElementById('gpsStatus'), input = document.getElementById('gpsCoords');
-  if (!navigator.geolocation) { status.textContent = '❌ المتصفح لا يدعم GPS'; status.className = 'gps-status err'; return; }
+  const btn = document.getElementById('gpsBtn');
+  const status = document.getElementById('gpsStatus');
+  const input = document.getElementById('gpsCoords');
+  if (!navigator.geolocation) {
+    status.textContent = '❌ المتصفح لا يدعم GPS';
+    status.className = 'gps-status err'; return;
+  }
   btn.textContent = '⏳'; btn.disabled = true;
   status.textContent = 'جاري تحديد الموقع...'; status.className = 'gps-status';
   navigator.geolocation.getCurrentPosition(
@@ -461,15 +450,15 @@ function getGPS() {
       status.className = 'gps-status ok'; btn.textContent = '✅'; btn.disabled = false;
     },
     function(err) {
-      const msgs = { 1: 'افتح إعدادات المتصفح وفعّل الموقع', 2: 'تعذر تحديد الموقع', 3: 'انتهت المهلة' };
-      status.textContent = '❌ ' + (msgs[err.code] || 'خطأ GPS');
+      const msgs = { 1: 'اضغط على 🔒 في شريط العنوان وفعّل الموقع', 2: 'تعذر تحديد الموقع', 3: 'انتهت المهلة — حاول مجدداً' };
+      status.textContent = '❌ ' + (msgs[err.code] || 'خطأ');
       status.className = 'gps-status err'; btn.textContent = '📡'; btn.disabled = false;
     },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
 }
 
-// ---- الصورة ----
+// ---- معاينة الصورة ----
 function previewPhoto(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
@@ -480,6 +469,28 @@ function previewPhoto(input) {
     };
     reader.readAsDataURL(input.files[0]);
   }
+}
+
+// ---- ضغط الصورة ----
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function(e) {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
 }
 
 // ---- الإرسال ----
@@ -501,49 +512,77 @@ async function submitForm() {
   btn.disabled = true; btn.textContent = '⏳ جاري الحفظ...';
 
   const data = {
-    siteName: siteName, siteNum: document.getElementById('siteNum').value,
-    zone: document.getElementById('zone').value, buildingName: document.getElementById('buildingName').value,
-    buildingNum: document.getElementById('buildingNum').value, floorNum: document.getElementById('floorNum').value,
-    roomNum: document.getElementById('roomNum').value, roomCode: document.getElementById('roomCode').value,
-    assetType: assetType, description: desc, brand: document.getElementById('brand').value,
-    model: document.getElementById('model').value, serial: document.getElementById('serial').value,
-    year: document.getElementById('year').value, opStatus: opStatus.value, condition: condition.value,
-    dept: document.getElementById('dept').value, city: document.getElementById('city').value,
-    qty: qty || '1', notes: document.getElementById('notes').value,
+    siteName: siteName,
+    siteNum: document.getElementById('siteNum').value,
+    zone: document.getElementById('zone').value,
+    buildingName: document.getElementById('buildingName').value,
+    buildingNum: document.getElementById('buildingNum').value,
+    floorNum: document.getElementById('floorNum').value,
+    roomNum: document.getElementById('roomNum').value,
+    roomCode: document.getElementById('roomCode').value,
+    assetType: assetType,
+    description: desc,
+    brand: document.getElementById('brand').value,
+    model: document.getElementById('model').value,
+    serial: document.getElementById('serial').value,
+    year: document.getElementById('year').value,
+    opStatus: opStatus.value,
+    condition: condition.value,
+    dept: document.getElementById('dept').value,
+    city: document.getElementById('city').value,
+    qty: qty || '1',
+    notes: document.getElementById('notes').value,
     gps: document.getElementById('gpsCoords').value,
-    date: new Date().toLocaleDateString('ar-SA'), timestamp: new Date().toISOString()
+    date: new Date().toLocaleDateString('ar-SA'),
+    timestamp: new Date().toISOString()
   };
 
+  // ضغط الصورة قبل الإرسال
   const photoFile = document.getElementById('photoInput').files[0];
-  if (photoFile) { try { data.photo = await toBase64(photoFile); data.photoName = photoFile.name; } catch(e) {} }
+  if (photoFile) {
+    try {
+      data.photo = await compressImage(photoFile, 800, 0.7);
+      data.photoName = photoFile.name;
+    } catch(e) {
+      try {
+        const r = new FileReader();
+        data.photo = await new Promise((res, rej) => { r.readAsDataURL(photoFile); r.onload = () => res(r.result); r.onerror = rej; });
+        data.photoName = photoFile.name;
+      } catch(e2) {}
+    }
+  }
 
+  // أوفلاين — احفظ محلياً
   if (!navigator.onLine) {
     const p = getPending(); p.push(data); savePending(p); updatePendingBadge();
     showToast('💾 محفوظ — سيُرسل عند توفر الإنترنت', 'warn');
-    resetForm(); btn.disabled = false; btn.textContent = '✅ إرسال البيانات'; return;
+    resetForm(); btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
+    return;
   }
 
-  const scriptUrl = localStorage.getItem(SCRIPT_KEY);
+  // أونلاين — أرسل
   try {
-    await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) });
+    await fetch(CONFIG.SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(data)
+    });
     showToast('✅ تم الإرسال بنجاح!', 'ok');
     resetForm();
-    if (getPending().length > 0) setTimeout(syncPending, 1000);
+    if (getPending().length > 0) setTimeout(syncPending, 1500);
   } catch(err) {
     const p = getPending(); p.push(data); savePending(p); updatePendingBadge();
     showToast('💾 حُفظ محلياً — سيُرسل لاحقاً', 'warn');
     resetForm();
   }
-  btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
-}
 
-function toBase64(file) {
-  return new Promise((res, rej) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result); r.onerror = rej; });
+  btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
 }
 
 function resetForm() {
   ['siteName','siteNum','zone','buildingName','buildingNum','floorNum','roomNum',
-   'roomCode','assetType','description','brand','model','serial','year','dept','city','notes','gpsCoords'].forEach(id => {
+   'roomCode','assetType','description','brand','model','serial','year','dept',
+   'city','notes','gpsCoords'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = el.tagName === 'SELECT' ? '' : '';
   });
@@ -557,9 +596,11 @@ function resetForm() {
   document.getElementById('gpsBtn').textContent = '📡';
   updateProgress();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // إعادة تحديد GPS تلقائياً للسجل التالي
+  setTimeout(requestGPSPermission, 500);
 }
 
-function showToast(msg, type = 'ok') {
+function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast ' + (type === 'error' ? 'error' : type === 'warn' ? 'warn' : '') + ' show';
