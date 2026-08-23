@@ -202,7 +202,7 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
           </select>
         </div>
       </div>
-      <div class="field"><label><span class="req">*</span>الوصف الرئيسي</label><input type="text" id="description" placeholder="وصف مختصر" oninput="updateProgress()"></div>
+      <div class="field"><label>الوصف الرئيسي</label><input type="text" id="description" placeholder="وصف مختصر (اختياري)" oninput="updateProgress()"></div>
       <div class="field-row">
         <div class="field"><label>العلامة التجارية</label><input type="text" id="brand" placeholder="ماركة"></div>
         <div class="field"><label>الموديل</label><input type="text" id="model" placeholder="موديل"></div>
@@ -375,7 +375,13 @@ function showApp() {
 
 // ---- GPS ----
 function requestGPSPermission() {
-  if (!navigator.geolocation) return;
+  if (!navigator.geolocation) {
+    document.getElementById('gpsStatus').textContent = '❌ الجهاز لا يدعم GPS';
+    document.getElementById('gpsStatus').className = 'gps-status err';
+    return;
+  }
+  document.getElementById('gpsStatus').textContent = '⏳ جاري تحديد موقعك...';
+  document.getElementById('gpsBtn').textContent = '⏳';
   navigator.geolocation.getCurrentPosition(
     function(pos) {
       document.getElementById('gpsCoords').value = pos.coords.latitude.toFixed(6) + ', ' + pos.coords.longitude.toFixed(6);
@@ -383,8 +389,18 @@ function requestGPSPermission() {
       document.getElementById('gpsStatus').className = 'gps-status ok';
       document.getElementById('gpsBtn').textContent = '✅';
     },
-    function() {},
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    function(err) {
+      if (err.code === 1) {
+        // رُفض — أظهر تعليمات واضحة
+        document.getElementById('gpsStatus').innerHTML = '⚠️ يرجى السماح بالموقع عند ظهور النافذة<br><small>اضغط الزر مرة أخرى إذا لم تظهر النافذة</small>';
+        document.getElementById('gpsStatus').className = 'gps-status err';
+      } else {
+        document.getElementById('gpsStatus').textContent = '⚠️ اضغط الزر للمحاولة مجدداً';
+        document.getElementById('gpsStatus').className = 'gps-status err';
+      }
+      document.getElementById('gpsBtn').textContent = '📡';
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
 }
 
@@ -573,7 +589,7 @@ async function submitForm() {
 
   if (!siteName)  { showToast('⚠️ اختر اسم الموقع', 'error'); return; }
   if (!assetType) { showToast('⚠️ اختر نوع الأصل', 'error'); return; }
-  if (!desc)      { showToast('⚠️ أدخل الوصف الرئيسي', 'error'); return; }
+  // الوصف اختياري
   if (!opStatus)  { showToast('⚠️ اختر الحالة التشغيلية', 'error'); return; }
   if (!condition) { showToast('⚠️ اختر حالة الأصل', 'error'); return; }
 
