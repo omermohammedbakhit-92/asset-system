@@ -236,11 +236,19 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
     <div class="section-body">
       <div class="field">
         <label>صورة الأصل</label>
-        <div class="photo-area" onclick="document.getElementById('photoInput').click()">
-          <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(this)">
-          <div class="icon">📸</div>
-          <p id="photoText">📷 تصوير مباشر أو 🖼️ اختيار من المعرض</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <button type="button" onclick="document.getElementById('photoCam').click()"
+            style="padding:14px 8px;background:#1F3864;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit">
+            📷 تصوير مباشر
+          </button>
+          <button type="button" onclick="document.getElementById('photoGal').click()"
+            style="padding:14px 8px;background:#2d5298;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit">
+            🖼️ من المعرض
+          </button>
         </div>
+        <input type="file" id="photoCam" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(this)">
+        <input type="file" id="photoGal" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+        <div id="photoStatus" style="text-align:center;font-size:13px;color:#718096;padding:8px">لم يتم اختيار صورة بعد</div>
         <img id="photoPreview" class="photo-preview" alt="معاينة">
       </div>
       <div class="field"><label>ملاحظات</label><textarea id="notes" placeholder="أي ملاحظات إضافية..."></textarea></div>
@@ -447,7 +455,8 @@ function previewPhoto(input) {
     reader.onload = e => {
       document.getElementById('photoPreview').src = e.target.result;
       document.getElementById('photoPreview').style.display = 'block';
-      document.getElementById('photoText').textContent = '✅ تم اختيار الصورة';
+      document.getElementById('photoStatus').textContent = '✅ تم اختيار الصورة';
+      document.getElementById('photoStatus').style.color = '#38a169';
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -496,7 +505,7 @@ async function submitForm() {
   };
 
   // ضغط الصورة وإضافتها للبيانات
-  const photoFile = document.getElementById('photoInput').files[0];
+  const photoFile = (document.getElementById('photoCam').files[0] || document.getElementById('photoGal').files[0]);
   if (photoFile) {
     try {
       data.photo = await compressImage(photoFile, 800, 0.7);
@@ -547,8 +556,10 @@ function resetForm() {
   document.getElementById('qty').value = '1';
   document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
   document.getElementById('photoPreview').style.display = 'none';
-  document.getElementById('photoText').textContent = 'اضغط لالتقاط صورة';
-  document.getElementById('photoInput').value = '';
+  document.getElementById('photoStatus').textContent = 'لم يتم اختيار صورة بعد';
+  document.getElementById('photoStatus').style.color = '#718096';
+  document.getElementById('photoCam').value = '';
+  document.getElementById('photoGal').value = '';
   document.getElementById('gpsStatus').textContent = 'اضغط الزر لالتقاط الإحداثيات';
   document.getElementById('gpsStatus').className = 'gps-status';
   document.getElementById('gpsBtn').textContent = '📡';
