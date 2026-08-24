@@ -237,9 +237,9 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
       <div class="field">
         <label>صورة الأصل</label>
         <div class="photo-area" onclick="document.getElementById('photoInput').click()">
-          <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="previewPhoto(this)">
+          <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(this)">
           <div class="icon">📸</div>
-          <p id="photoText">اضغط لالتقاط صورة</p>
+          <p id="photoText">📷 تصوير مباشر أو 🖼️ اختيار من المعرض</p>
         </div>
         <img id="photoPreview" class="photo-preview" alt="معاينة">
       </div>
