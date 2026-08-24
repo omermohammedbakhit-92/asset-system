@@ -236,19 +236,17 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
     <div class="section-body">
       <div class="field">
         <label>صورة الأصل</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
-          <button type="button" onclick="document.getElementById('photoCam').click()"
-            style="padding:14px 8px;background:#1F3864;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit">
-            📷 تصوير مباشر
-          </button>
-          <button type="button" onclick="document.getElementById('photoGal').click()"
-            style="padding:14px 8px;background:#2d5298;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit">
-            🖼️ من المعرض
-          </button>
-        </div>
         <input type="file" id="photoCam" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(this)">
         <input type="file" id="photoGal" accept="image/*" style="display:none" onchange="previewPhoto(this)">
-        <div id="photoStatus" style="text-align:center;font-size:13px;color:#718096;padding:8px">لم يتم اختيار صورة بعد</div>
+        <button type="button" onclick="document.getElementById('photoCam').click()"
+          style="width:100%;padding:18px;background:#1F3864;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:12px;letter-spacing:0.5px">
+          📷 تصوير مباشر
+        </button>
+        <button type="button" onclick="document.getElementById('photoGal').click()"
+          style="width:100%;padding:18px;background:white;color:#1F3864;border:2px solid #1F3864;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;letter-spacing:0.5px">
+          🖼️ اختيار من المعرض
+        </button>
+        <div id="photoStatus" style="text-align:center;font-size:13px;color:#718096;padding:6px">لم يتم اختيار صورة بعد</div>
         <img id="photoPreview" class="photo-preview" alt="معاينة">
       </div>
       <div class="field"><label>ملاحظات</label><textarea id="notes" placeholder="أي ملاحظات إضافية..."></textarea></div>
