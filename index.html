@@ -287,7 +287,7 @@ window.onload = function() {
     document.getElementById('loginBtn').disabled = true;
     return;
   }
-  if (sessionStorage.getItem(AUTH_KEY + CONFIG.PASS_VERSION) === '1') {
+  if (localStorage.getItem(AUTH_KEY + CONFIG.PASS_VERSION) === '1') {
     showApp(); return;
   }
   document.getElementById('passInput').addEventListener('keypress', function(e) {
@@ -300,7 +300,7 @@ function checkAuth() {
   const pass = document.getElementById('passInput').value;
   if (pass === CONFIG.PASSWORD) {
     localStorage.removeItem(ATTEMPTS_KEY);
-    sessionStorage.setItem(AUTH_KEY + CONFIG.PASS_VERSION, '1');
+    localStorage.setItem(AUTH_KEY + CONFIG.PASS_VERSION, '1');
     showApp();
   } else {
     const attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0') + 1;
