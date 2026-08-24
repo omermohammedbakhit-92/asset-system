@@ -49,7 +49,7 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
 .gps-row { display: flex; gap: 8px; align-items: flex-end; }
 .gps-row input { flex: 1; }
 .btn-gps { padding: 11px 14px; background: #2d5298; color: white; border: none; border-radius: 9px; font-size: 18px; cursor: pointer; flex-shrink: 0; }
-.gps-status { font-size: 11px; color: #718096; margin-top: 4px; }
+.gps-status { font-size: 11px; color: #718096; margin-top: 4px; line-height: 1.5; }
 .gps-status.ok { color: #38a169; }
 .gps-status.err { color: #e53e3e; }
 .submit-area { padding: 0 0 30px; }
@@ -68,20 +68,14 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
 .lock-input { width: 100%; padding: 14px; border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-size: 16px; font-family: inherit; text-align: center; margin-bottom: 12px; }
 .lock-input::placeholder { color: rgba(255,255,255,0.4); }
 .lock-input:focus { outline: none; border-color: #4FC3F7; }
-.btn-lock { width: 100%; padding: 14px; background: #4FC3F7; color: #1F3864; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
+.btn-lock { width: 100%; padding: 14px; background: #4FC3F7; color: #1F3864; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .btn-lock:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-google { width: 100%; padding: 13px; background: white; color: #1a2332; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .lock-err { color: #FC8181; font-size: 13px; margin-top: 10px; min-height: 20px; }
 .blocked-msg { background: rgba(197,48,48,0.3); border: 1px solid #FC8181; border-radius: 10px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; display: none; }
 .expired-msg { background: rgba(197,48,48,0.3); border: 1px solid #FC8181; border-radius: 10px; padding: 14px; margin-bottom: 16px; font-size: 14px; line-height: 1.7; display: none; }
-.google-status { font-size: 12px; opacity: 0.7; margin-top: 8px; }
-.google-status.ok { color: #9AE6B4; opacity: 1; }
 </style>
 </head>
 <body>
-
-<!-- Google Sign-In SDK -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <!-- شاشة القفل -->
 <div class="lock-screen" id="lockScreen">
@@ -94,11 +88,9 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
     <input class="lock-input" id="passInput" type="password" placeholder="أدخل كلمة المرور" maxlength="30">
     <button class="btn-lock" id="loginBtn" onclick="checkAuth()">دخول ←</button>
     <div class="lock-err" id="lockErr"></div>
-    <div class="google-status" id="googleStatus">⏳ جاري تحضير تسجيل الدخول بـ Google...</div>
   </div>
 </div>
 
-<!-- الشريط العلوي -->
 <div class="offline-banner" id="offlineBanner">
   📴 وضع أوفلاين — البيانات محفوظة محلياً
   <span id="pendingCount" class="pending-badge">0</span>
@@ -112,7 +104,6 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
 </div>
 
 <div class="container">
-  <!-- الموقع -->
   <div class="section">
     <div class="section-header">📍 بيانات الموقع</div>
     <div class="section-body">
@@ -182,12 +173,11 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
           <input type="text" id="gpsCoords" placeholder="اضغط الزر لتحديد موقعك" readonly>
           <button class="btn-gps" onclick="getGPS()" id="gpsBtn">📡</button>
         </div>
-        <div class="gps-status" id="gpsStatus">اضغط الزر لالتقاط الإحداثيات تلقائياً</div>
+        <div class="gps-status" id="gpsStatus">اضغط الزر لالتقاط الإحداثيات</div>
       </div>
     </div>
   </div>
 
-  <!-- الأصل -->
   <div class="section">
     <div class="section-header">⚙️ بيانات الأصل</div>
     <div class="section-body">
@@ -202,7 +192,7 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
           </select>
         </div>
       </div>
-      <div class="field"><label>الوصف الرئيسي</label><input type="text" id="description" placeholder="وصف مختصر (اختياري)" oninput="updateProgress()"></div>
+      <div class="field"><label>الوصف الرئيسي</label><input type="text" id="description" placeholder="وصف مختصر (اختياري)"></div>
       <div class="field-row">
         <div class="field"><label>العلامة التجارية</label><input type="text" id="brand" placeholder="ماركة"></div>
         <div class="field"><label>الموديل</label><input type="text" id="model" placeholder="موديل"></div>
@@ -218,7 +208,6 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
     </div>
   </div>
 
-  <!-- الحالة -->
   <div class="section">
     <div class="section-header">🔵 الحالة</div>
     <div class="section-body">
@@ -242,7 +231,6 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
     </div>
   </div>
 
-  <!-- الصورة والملاحظات -->
   <div class="section">
     <div class="section-header">📷 الصورة والملاحظات</div>
     <div class="section-body">
@@ -268,52 +256,23 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
 
 <script>
 // ============================================================
-// ⚙️ الإعدادات — أنت فقط تعدّل هذا القسم
+// ⚙️ الإعدادات — عدّل هذا القسم فقط
 // ============================================================
 const CONFIG = {
   PASSWORD:     'Omar@2026',
   EXPIRY_DATE:  '2026-12-31',
   MAX_ATTEMPTS: 5,
   PASS_VERSION: 1,
-  SCRIPT_URL:   'https://script.google.com/macros/s/AKfycbyDKT4sjaCOCclmIqf5ZC2BFQh0lVO-UjjOhbXSgBp0P96_V8C0bIm1IvqjKER4FQ1w/exec',
-  CLIENT_ID:    '786146788636-rnrkdri0f9qftn5sdt1c2ne8i2jcve8p.apps.googleusercontent.com',
-  DRIVE_FOLDER: 'صور حصر الأصول'
+  SCRIPT_URL:   'https://script.google.com/macros/s/AKfycbyDKT4sjaCOCclmIqf5ZC2BFQh0lVO-UjjOhbXSgBp0P96_V8C0bIm1IvqjKER4FQ1w/exec'
 };
 // ============================================================
 
 const PENDING_KEY  = 'pendingAssets_v3';
 const ATTEMPTS_KEY = 'authAttempts_v2';
 const AUTH_KEY     = 'authOk_v';
-const TOKEN_KEY    = 'googleToken';
 
-let googleToken = null;
-let tokenClient = null;
-
-// ---- تهيئة Google Identity ----
-function initGoogle() {
-  if (typeof google === 'undefined') {
-    setTimeout(initGoogle, 500); return;
-  }
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CONFIG.CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/drive.file',
-    callback: function(resp) {
-      if (resp.access_token) {
-        googleToken = resp.access_token;
-        localStorage.setItem(TOKEN_KEY, resp.access_token);
-        document.getElementById('googleStatus').textContent = '✅ تم تسجيل الدخول بـ Google';
-        document.getElementById('googleStatus').className = 'google-status ok';
-      }
-    }
-  });
-  document.getElementById('googleStatus').textContent = '✅ Google جاهز — سيطلب الإذن عند أول إرسال';
-  document.getElementById('googleStatus').className = 'google-status ok';
-  const saved = localStorage.getItem(TOKEN_KEY);
-  if (saved) googleToken = saved;
-}
-
+// ---- تهيئة ----
 window.onload = function() {
-  // فحص انتهاء الصلاحية
   const today = new Date().toISOString().split('T')[0];
   if (today > CONFIG.EXPIRY_DATE) {
     document.getElementById('expiredMsg').style.display = 'block';
@@ -321,7 +280,6 @@ window.onload = function() {
     document.getElementById('loginBtn').disabled = true;
     return;
   }
-  // فحص الحظر
   const attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0');
   if (attempts >= CONFIG.MAX_ATTEMPTS) {
     document.getElementById('blockedMsg').style.display = 'block';
@@ -329,7 +287,6 @@ window.onload = function() {
     document.getElementById('loginBtn').disabled = true;
     return;
   }
-  // فحص الجلسة
   if (sessionStorage.getItem(AUTH_KEY + CONFIG.PASS_VERSION) === '1') {
     showApp(); return;
   }
@@ -337,7 +294,6 @@ window.onload = function() {
     if (e.key === 'Enter') checkAuth();
   });
   document.getElementById('passInput').focus();
-  setTimeout(initGoogle, 1000);
 };
 
 function checkAuth() {
@@ -369,19 +325,12 @@ function showApp() {
   if (!navigator.onLine) onOffline();
   updatePendingBadge();
   updateProgress();
-  setTimeout(initGoogle, 500);
   requestGPSPermission();
 }
 
 // ---- GPS ----
 function requestGPSPermission() {
-  if (!navigator.geolocation) {
-    document.getElementById('gpsStatus').textContent = '❌ الجهاز لا يدعم GPS';
-    document.getElementById('gpsStatus').className = 'gps-status err';
-    return;
-  }
-  document.getElementById('gpsStatus').textContent = '⏳ جاري تحديد موقعك...';
-  document.getElementById('gpsBtn').textContent = '⏳';
+  if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
     function(pos) {
       document.getElementById('gpsCoords').value = pos.coords.latitude.toFixed(6) + ', ' + pos.coords.longitude.toFixed(6);
@@ -391,22 +340,22 @@ function requestGPSPermission() {
     },
     function(err) {
       if (err.code === 1) {
-        // رُفض — أظهر تعليمات واضحة
-        document.getElementById('gpsStatus').innerHTML = '⚠️ يرجى السماح بالموقع عند ظهور النافذة<br><small>اضغط الزر مرة أخرى إذا لم تظهر النافذة</small>';
-        document.getElementById('gpsStatus').className = 'gps-status err';
-      } else {
-        document.getElementById('gpsStatus').textContent = '⚠️ اضغط الزر للمحاولة مجدداً';
+        document.getElementById('gpsStatus').textContent = '⚠️ اضغط الزر وسمح بالموقع عند الطلب';
         document.getElementById('gpsStatus').className = 'gps-status err';
       }
-      document.getElementById('gpsBtn').textContent = '📡';
     },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
   );
 }
 
 function getGPS() {
-  const btn = document.getElementById('gpsBtn'), status = document.getElementById('gpsStatus'), input = document.getElementById('gpsCoords');
-  if (!navigator.geolocation) { status.textContent = '❌ المتصفح لا يدعم GPS'; status.className = 'gps-status err'; return; }
+  const btn = document.getElementById('gpsBtn');
+  const status = document.getElementById('gpsStatus');
+  const input = document.getElementById('gpsCoords');
+  if (!navigator.geolocation) {
+    status.textContent = '❌ الجهاز لا يدعم GPS';
+    status.className = 'gps-status err'; return;
+  }
   btn.textContent = '⏳'; btn.disabled = true;
   status.textContent = 'جاري تحديد الموقع...'; status.className = 'gps-status';
   navigator.geolocation.getCurrentPosition(
@@ -416,7 +365,7 @@ function getGPS() {
       status.className = 'gps-status ok'; btn.textContent = '✅'; btn.disabled = false;
     },
     function(err) {
-      const msgs = { 1: 'اضغط 🔒 في شريط العنوان وفعّل الموقع', 2: 'تعذر تحديد الموقع', 3: 'انتهت المهلة' };
+      const msgs = { 1: 'اضغط الزر مجدداً وسمح بالموقع', 2: 'تعذر تحديد الموقع', 3: 'انتهت المهلة — حاول مجدداً' };
       status.textContent = '❌ ' + (msgs[err.code] || 'خطأ');
       status.className = 'gps-status err'; btn.textContent = '📡'; btn.disabled = false;
     },
@@ -444,18 +393,10 @@ async function syncPending() {
   let synced = 0;
   for (let i = 0; i < pending.length; i++) {
     try {
-      const item = pending[i];
-      // رفع الصورة أولاً إن وجدت
-      if (item.photoBase64 && googleToken) {
-        try {
-          item.photoUrl = await uploadToDrive(item.photoBase64, item.photoName || 'photo.jpg', item.assetCode);
-          delete item.photoBase64;
-        } catch(e) {}
-      }
       await fetch(CONFIG.SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(item)
+        body: JSON.stringify(pending[i])
       });
       synced++;
     } catch(e) { break; }
@@ -464,69 +405,17 @@ async function syncPending() {
   document.getElementById('syncBanner').classList.remove('show');
 }
 
-// ---- رفع الصورة لـ Drive مباشرة ----
-async function uploadToDrive(base64Data, fileName, assetCode) {
-  // الحصول على token إذا لم يكن موجوداً
-  if (!googleToken) {
-    await new Promise((resolve) => {
-      tokenClient.callback = function(resp) {
-        if (resp.access_token) { googleToken = resp.access_token; localStorage.setItem(TOKEN_KEY, resp.access_token); }
-        resolve();
-      };
-      tokenClient.requestAccessToken({ prompt: 'consent' });
-    });
-  }
-
-  const mimeType = base64Data.split(';')[0].split(':')[1];
-  const base64   = base64Data.split(',')[1];
-  const byteStr  = atob(base64);
-  const arr      = new Uint8Array(byteStr.length);
-  for (let i = 0; i < byteStr.length; i++) arr[i] = byteStr.charCodeAt(i);
-  const blob = new Blob([arr], { type: mimeType });
-
-  // إيجاد أو إنشاء المجلد
-  let folderId = localStorage.getItem('driveFolderId');
-  if (!folderId) {
-    const searchRes = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=name='${CONFIG.DRIVE_FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-      { headers: { Authorization: 'Bearer ' + googleToken } }
-    );
-    const searchData = await searchRes.json();
-    if (searchData.files && searchData.files.length > 0) {
-      folderId = searchData.files[0].id;
-    } else {
-      const createRes = await fetch('https://www.googleapis.com/drive/v3/files', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + googleToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: CONFIG.DRIVE_FOLDER, mimeType: 'application/vnd.google-apps.folder' })
-      });
-      const createData = await createRes.json();
-      folderId = createData.id;
-    }
-    localStorage.setItem('driveFolderId', folderId);
-  }
-
-  // رفع الملف
-  const formData = new FormData();
-  const meta = { name: (assetCode || 'asset') + '_' + fileName, parents: [folderId] };
-  formData.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
-  formData.append('file', blob);
-
-  const uploadRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink,webContentLink', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + googleToken },
-    body: formData
-  });
-  const uploadData = await uploadRes.json();
-
-  // جعل الملف عاماً
-  await fetch(`https://www.googleapis.com/drive/v3/files/${uploadData.id}/permissions`, {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + googleToken, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ role: 'reader', type: 'anyone' })
-  });
-
-  return `https://drive.google.com/uc?export=view&id=${uploadData.id}`;
+// ---- تقدم النموذج ----
+function updateProgress() {
+  const fields = [
+    document.getElementById('siteName').value,
+    document.getElementById('assetType').value,
+    document.querySelector('input[name="opStatus"]:checked'),
+    document.querySelector('input[name="condition"]:checked'),
+    document.getElementById('qty').value,
+  ];
+  const filled = fields.filter(f => f && f !== '').length;
+  document.getElementById('progressFill').style.width = Math.round((filled/fields.length)*100) + '%';
 }
 
 // ---- ضغط الصورة ----
@@ -564,96 +453,72 @@ function previewPhoto(input) {
   }
 }
 
-// ---- تقدم النموذج ----
-function updateProgress() {
-  const fields = [
-    document.getElementById('siteName').value,
-    document.getElementById('assetType').value,
-    document.getElementById('description').value,
-    document.querySelector('input[name="opStatus"]:checked'),
-    document.querySelector('input[name="condition"]:checked'),
-    document.getElementById('qty').value,
-  ];
-  const filled = fields.filter(f => f && f !== '').length;
-  document.getElementById('progressFill').style.width = Math.round((filled/fields.length)*100) + '%';
-}
-
 // ---- الإرسال ----
 async function submitForm() {
   const siteName  = document.getElementById('siteName').value;
   const assetType = document.getElementById('assetType').value;
-  const desc      = document.getElementById('description').value;
   const opStatus  = document.querySelector('input[name="opStatus"]:checked');
   const condition = document.querySelector('input[name="condition"]:checked');
   const qty       = document.getElementById('qty').value;
 
   if (!siteName)  { showToast('⚠️ اختر اسم الموقع', 'error'); return; }
   if (!assetType) { showToast('⚠️ اختر نوع الأصل', 'error'); return; }
-  // الوصف اختياري
   if (!opStatus)  { showToast('⚠️ اختر الحالة التشغيلية', 'error'); return; }
   if (!condition) { showToast('⚠️ اختر حالة الأصل', 'error'); return; }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.textContent = '⏳ جاري الحفظ...';
 
-  const assetCode = (assetType || 'OTH') + '-' + Date.now();
-
   const data = {
-    siteName: siteName, siteNum: document.getElementById('siteNum').value,
-    zone: document.getElementById('zone').value,
+    siteName:     siteName,
+    siteNum:      document.getElementById('siteNum').value,
+    zone:         document.getElementById('zone').value,
     buildingName: document.getElementById('buildingName').value,
-    buildingNum: document.getElementById('buildingNum').value,
-    floorNum: document.getElementById('floorNum').value,
-    roomNum: document.getElementById('roomNum').value,
-    roomCode: document.getElementById('roomCode').value,
-    assetType: assetType, description: desc,
-    brand: document.getElementById('brand').value,
-    model: document.getElementById('model').value,
-    serial: document.getElementById('serial').value,
-    year: document.getElementById('year').value,
-    opStatus: opStatus.value, condition: condition.value,
-    dept: document.getElementById('dept').value,
-    city: document.getElementById('city').value,
-    qty: qty || '1', notes: document.getElementById('notes').value,
-    gps: document.getElementById('gpsCoords').value,
-    date: new Date().toLocaleDateString('ar-SA'),
-    timestamp: new Date().toISOString(),
-    assetCode: assetCode
+    buildingNum:  document.getElementById('buildingNum').value,
+    floorNum:     document.getElementById('floorNum').value,
+    roomNum:      document.getElementById('roomNum').value,
+    roomCode:     document.getElementById('roomCode').value,
+    assetType:    assetType,
+    description:  document.getElementById('description').value,
+    brand:        document.getElementById('brand').value,
+    model:        document.getElementById('model').value,
+    serial:       document.getElementById('serial').value,
+    year:         document.getElementById('year').value,
+    opStatus:     opStatus.value,
+    condition:    condition.value,
+    dept:         document.getElementById('dept').value,
+    city:         document.getElementById('city').value,
+    qty:          qty || '1',
+    notes:        document.getElementById('notes').value,
+    gps:          document.getElementById('gpsCoords').value,
+    date:         new Date().toLocaleDateString('ar-SA'),
+    timestamp:    new Date().toISOString()
   };
 
-  // معالجة الصورة
+  // ضغط الصورة وإضافتها للبيانات
   const photoFile = document.getElementById('photoInput').files[0];
-  let photoBase64 = null;
   if (photoFile) {
-    try { photoBase64 = await compressImage(photoFile, 800, 0.7); }
-    catch(e) { try { const r = new FileReader(); photoBase64 = await new Promise((res,rej)=>{r.readAsDataURL(photoFile);r.onload=()=>res(r.result);r.onerror=rej;}); } catch(e2){} }
+    try {
+      data.photo = await compressImage(photoFile, 800, 0.7);
+      data.photoName = photoFile.name;
+    } catch(e) {
+      try {
+        const r = new FileReader();
+        data.photo = await new Promise((res,rej)=>{r.readAsDataURL(photoFile);r.onload=()=>res(r.result);r.onerror=rej;});
+        data.photoName = photoFile.name;
+      } catch(e2) {}
+    }
   }
 
-  // أوفلاين — احفظ محلياً مع الصورة
+  // أوفلاين — احفظ محلياً
   if (!navigator.onLine) {
-    if (photoBase64) { data.photoBase64 = photoBase64; data.photoName = photoFile.name; }
     const p = getPending(); p.push(data); savePending(p); updatePendingBadge();
-    showToast('💾 محفوظ — سيُرسل مع الصورة عند توفر الإنترنت', 'warn');
+    showToast('💾 محفوظ — سيُرسل عند توفر الإنترنت', 'warn');
     resetForm(); btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
     return;
   }
 
-  // أونلاين — رفع الصورة لـ Drive مباشرة
-  if (photoBase64) {
-    try {
-      btn.textContent = '📤 جاري رفع الصورة...';
-      data.photoUrl = await uploadToDrive(photoBase64, photoFile.name, assetCode);
-      showToast('📸 تم رفع الصورة ✅', 'ok');
-    } catch(e) {
-      // فشل رفع الصورة — احفظها للمزامنة لاحقاً
-      data.photoBase64 = photoBase64;
-      data.photoName = photoFile ? photoFile.name : 'photo.jpg';
-      showToast('⚠️ سيُعاد رفع الصورة لاحقاً', 'warn');
-    }
-  }
-
-  // إرسال البيانات للشيت
-  btn.textContent = '📊 جاري الحفظ في الشيت...';
+  // أونلاين — أرسل
   try {
     await fetch(CONFIG.SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
@@ -664,7 +529,6 @@ async function submitForm() {
     resetForm();
     if (getPending().length > 0) setTimeout(syncPending, 1500);
   } catch(err) {
-    if (photoBase64 && !data.photoUrl) data.photoBase64 = photoBase64;
     const p = getPending(); p.push(data); savePending(p); updatePendingBadge();
     showToast('💾 حُفظ محلياً — سيُرسل لاحقاً', 'warn');
     resetForm();
@@ -685,7 +549,7 @@ function resetForm() {
   document.getElementById('photoPreview').style.display = 'none';
   document.getElementById('photoText').textContent = 'اضغط لالتقاط صورة';
   document.getElementById('photoInput').value = '';
-  document.getElementById('gpsStatus').textContent = 'اضغط الزر لالتقاط الإحداثيات تلقائياً';
+  document.getElementById('gpsStatus').textContent = 'اضغط الزر لالتقاط الإحداثيات';
   document.getElementById('gpsStatus').className = 'gps-status';
   document.getElementById('gpsBtn').textContent = '📡';
   updateProgress();
