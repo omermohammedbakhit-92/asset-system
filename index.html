@@ -522,7 +522,7 @@ async function submitForm() {
     roomNum:      document.getElementById('roomNum').value,
     roomCode:     document.getElementById('roomCode').value,
     assetType:    assetType,
-    description:  document.getElementById('description').value,
+    description:  document.getElementById('description').value || document.getElementById('descSelect').value,
     brand:        document.getElementById('brand').value,
     model:        document.getElementById('model').value,
     serial:       document.getElementById('serial').value,
@@ -542,7 +542,7 @@ async function submitForm() {
   const photoFile = (document.getElementById('photoCam').files[0] || document.getElementById('photoGal').files[0]);
   if (photoFile) {
     try {
-      data.photo = await compressImage(photoFile, 800, 0.7);
+      data.photo = await compressImage(photoFile, 600, 0.5);
       data.photoName = photoFile.name;
     } catch(e) {
       try {
@@ -586,6 +586,7 @@ function handleDescChange() {
   const hidden = document.getElementById('description');
   if (sel === 'أخرى') {
     other.style.display = 'block';
+    other.focus();
     hidden.value = other.value;
   } else {
     other.style.display = 'none';
@@ -615,32 +616,33 @@ async function scanQR(input) {
   try {
     const file = input.files[0];
     const imgBitmap = await createImageBitmap(file);
-    const canvas = document.createElement('canvas');
-    canvas.width = imgBitmap.width;
-    canvas.height = imgBitmap.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imgBitmap, 0, 0);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     
-    // استخدام BarcodeDetector إن كان متاحاً
     if ('BarcodeDetector' in window) {
-      const detector = new BarcodeDetector({ formats: ['qr_code', 'code_128', 'code_39', 'ean_13', 'data_matrix'] });
+      const detector = new BarcodeDetector({ formats: ['qr_code', 'code_128', 'code_39', 'ean_13', 'data_matrix', 'code_93'] });
       const barcodes = await detector.detect(imgBitmap);
       if (barcodes.length > 0) {
-        const code = barcodes[0].rawValue;
+        let code = barcodes[0].rawValue;
+        // تنسيق كود ZATCA: استخراج الأرقام بعد ZATCA أو إظهاره كما هو
+        const zatcaMatch = code.match(/ZATCA\s*(\d+)/i);
+        if (zatcaMatch) {
+          code = 'ZATCA' + zatcaMatch[1];
+        } else {
+          // إذا لم يحتوِ على ZATCA — أظهره كما هو
+          code = code.replace(/\s+/g, '');
+        }
         document.getElementById('serial').value = code;
-        status.textContent = '✅ تم قراءة الكود: ' + code;
+        status.textContent = '✅ ' + code;
         status.style.color = '#38a169';
       } else {
-        status.textContent = '⚠️ لم يتم التعرف على الكود — أدخله يدوياً';
+        status.textContent = '⚠️ لم يُقرأ الكود — صوّر مرة أخرى أو أدخله يدوياً';
         status.style.color = '#d69e2e';
       }
     } else {
-      status.textContent = '⚠️ المتصفح لا يدعم قراءة QR — أدخل الكود يدوياً';
+      status.textContent = '⚠️ أدخل الكود يدوياً (المتصفح لا يدعم القراءة)';
       status.style.color = '#d69e2e';
     }
   } catch(e) {
-    status.textContent = '❌ فشل قراءة الكود — أدخله يدوياً';
+    status.textContent = '❌ فشل — أدخل الكود يدوياً';
     status.style.color = '#e53e3e';
   }
 }
