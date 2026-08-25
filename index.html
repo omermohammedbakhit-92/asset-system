@@ -580,12 +580,6 @@ async function submitForm() {
   btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
 }
 
- else {
-    other.style.display = 'none';
-  }
-  updateProgress();
-}
-
 // مزامنة حقل الوصف الآخر مع الحقل المخفي
 
 
@@ -608,7 +602,7 @@ async function scanQR(input) {
         // تنسيق كود ZATCA: استخراج الأرقام بعد ZATCA أو إظهاره كما هو
         const zatcaMatch = code.match(/ZATCA\s*(\d+)/i);
         if (zatcaMatch) {
-          code = 'ZATCA' + zatcaMatch[1];
+          code = zatcaMatch[0];
         } else {
           // إذا لم يحتوِ على ZATCA — أظهره كما هو
           code = code.replace(/\s+/g, '');
