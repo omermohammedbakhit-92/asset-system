@@ -157,9 +157,9 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
           </div>
         </div>
       </div>
-      <div class="field"><label>المنطقة التابعة للمبنى</label><input type="text" id="zone" placeholder="المبنى الرئيسي"></div>
+      <div class="field"><label><span class="req">*</span>المنطقة التابعة للمبنى</label><input type="text" id="zone" placeholder="المبنى الرئيسي" oninput="updateProgress()"></div>
       <div class="field-row">
-        <div class="field"><label>اسم المبنى</label><input type="text" id="buildingName" placeholder="اسم المبنى"></div>
+        <div class="field"><label><span class="req">*</span>اسم المبنى</label><input type="text" id="buildingName" placeholder="اسم المبنى" oninput="updateProgress()"></div>
         <div class="field"><label>رقم المبنى</label><input type="text" id="buildingNum" placeholder="رقم"></div>
       </div>
       <div class="field-row">
@@ -186,19 +186,51 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
         <div class="select-wrap">
           <select id="assetType" onchange="updateProgress()">
             <option value="">— اختر النوع —</option>
-            <option>مضخة</option><option>لوحة كهربائية</option><option>لوحة إنذار</option>
-            <option>كاشف دخان</option><option>جرس إنذار</option><option>كاميرا</option>
-            <option>طفاية حريق</option><option>مولد كهربائي</option><option>مكيف</option><option>غيره</option>
+            <option>مضخة</option>
+            <option>مضخة غاطسة</option>
+            <option>لوحة المضخات</option>
+            <option>لوحة كهربائية</option>
+            <option>لوحة إنذار</option>
+            <option>خزان ضغط</option>
+            <option>خزان ديزل</option>
+            <option>كاشف دخان</option>
+            <option>جرس إنذار</option>
+            <option>كاميرا</option>
+            <option>طفاية حريق</option>
+            <option>غيره</option>
           </select>
         </div>
       </div>
-      <div class="field"><label>الوصف الرئيسي</label><input type="text" id="description" placeholder="وصف مختصر (اختياري)"></div>
+      <div class="field">
+        <label><span class="req">*</span>الوصف الرئيسي</label>
+        <div class="select-wrap">
+          <select id="descSelect" onchange="onDescChange()" style="margin-bottom:8px">
+            <option value="">— اختر الوصف —</option>
+            <option>مضخة الكهرباء</option>
+            <option>مضخة الديزل</option>
+            <option>المضخة التعويضية</option>
+            <option>لوحة مضخة الكهرباء</option>
+            <option>لوحة مضخة الديزل</option>
+            <option>لوحة المضخة التعويضية</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+        <input type="text" id="description" placeholder="اكتب الوصف هنا" style="display:none" oninput="updateProgress()">
+      </div>
       <div class="field-row">
         <div class="field"><label>العلامة التجارية</label><input type="text" id="brand" placeholder="ماركة"></div>
         <div class="field"><label>الموديل</label><input type="text" id="model" placeholder="موديل"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>الرقم التسلسلي</label><input type="text" id="serial" placeholder="S/N"></div>
+        <div class="field">
+          <label>رقم الترميز (ZATCA)</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="serial" placeholder="مثال: ZATCA60015721" style="flex:1">
+            <label for="qrScan" style="padding:11px 14px;background:#2d5298;color:white;border-radius:9px;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center">📷</label>
+          </div>
+          <input type="file" id="qrScan" accept="image/*" capture="environment" style="display:none" onchange="scanQR(this)">
+          <div id="qrStatus" style="font-size:11px;color:#718096;margin-top:4px">اضغط 📷 لتصوير كود ZATCA</div>
+        </div>
         <div class="field"><label>سنة الصنع</label><input type="number" id="year" placeholder="2020" min="1990" max="2030"></div>
       </div>
       <div class="field-row">
@@ -413,7 +445,10 @@ async function syncPending() {
 function updateProgress() {
   const fields = [
     document.getElementById('siteName').value,
+    document.getElementById('zone').value,
+    document.getElementById('buildingName').value,
     document.getElementById('assetType').value,
+    document.getElementById('description').value,
     document.querySelector('input[name="opStatus"]:checked'),
     document.querySelector('input[name="condition"]:checked'),
     document.getElementById('qty').value,
@@ -467,7 +502,10 @@ async function submitForm() {
   const qty       = document.getElementById('qty').value;
 
   if (!siteName)  { showToast('⚠️ اختر اسم الموقع', 'error'); return; }
+  if (!document.getElementById('zone').value) { showToast('⚠️ أدخل المنطقة التابعة للمبنى', 'error'); return; }
+  if (!document.getElementById('buildingName').value) { showToast('⚠️ أدخل اسم المبنى', 'error'); return; }
   if (!assetType) { showToast('⚠️ اختر نوع الأصل', 'error'); return; }
+  if (!document.getElementById('description').value) { showToast('⚠️ اختر الوصف الرئيسي', 'error'); return; }
   if (!opStatus)  { showToast('⚠️ اختر الحالة التشغيلية', 'error'); return; }
   if (!condition) { showToast('⚠️ اختر حالة الأصل', 'error'); return; }
 
@@ -542,6 +580,71 @@ async function submitForm() {
   btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
 }
 
+function handleDescChange() {
+  const sel = document.getElementById('descSelect').value;
+  const other = document.getElementById('descOther');
+  const hidden = document.getElementById('description');
+  if (sel === 'أخرى') {
+    other.style.display = 'block';
+    hidden.value = other.value;
+  } else {
+    other.style.display = 'none';
+    hidden.value = sel;
+  }
+  updateProgress();
+}
+
+// مزامنة حقل الوصف الآخر مع الحقل المخفي
+document.addEventListener('DOMContentLoaded', function() {
+  const other = document.getElementById('descOther');
+  if (other) {
+    other.addEventListener('input', function() {
+      document.getElementById('description').value = this.value;
+      updateProgress();
+    });
+  }
+});
+
+// مسح QR Code من الصورة
+async function scanQR(input) {
+  if (!input.files || !input.files[0]) return;
+  const status = document.getElementById('qrStatus');
+  status.textContent = '⏳ جاري قراءة الكود...';
+  status.style.color = '#718096';
+  
+  try {
+    const file = input.files[0];
+    const imgBitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = imgBitmap.width;
+    canvas.height = imgBitmap.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgBitmap, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // استخدام BarcodeDetector إن كان متاحاً
+    if ('BarcodeDetector' in window) {
+      const detector = new BarcodeDetector({ formats: ['qr_code', 'code_128', 'code_39', 'ean_13', 'data_matrix'] });
+      const barcodes = await detector.detect(imgBitmap);
+      if (barcodes.length > 0) {
+        const code = barcodes[0].rawValue;
+        document.getElementById('serial').value = code;
+        status.textContent = '✅ تم قراءة الكود: ' + code;
+        status.style.color = '#38a169';
+      } else {
+        status.textContent = '⚠️ لم يتم التعرف على الكود — أدخله يدوياً';
+        status.style.color = '#d69e2e';
+      }
+    } else {
+      status.textContent = '⚠️ المتصفح لا يدعم قراءة QR — أدخل الكود يدوياً';
+      status.style.color = '#d69e2e';
+    }
+  } catch(e) {
+    status.textContent = '❌ فشل قراءة الكود — أدخله يدوياً';
+    status.style.color = '#e53e3e';
+  }
+}
+
 function resetForm() {
   ['siteName','siteNum','zone','buildingName','buildingNum','floorNum','roomNum',
    'roomCode','assetType','description','brand','model','serial','year','dept',
@@ -557,6 +660,12 @@ function resetForm() {
   document.getElementById('photoCam').value = '';
   document.getElementById('photoGal').value = '';
   document.getElementById('gpsStatus').textContent = 'اضغط الزر لالتقاط الإحداثيات';
+  document.getElementById('descSelect').value = '';
+  document.getElementById('descOther').style.display = 'none';
+  document.getElementById('descOther').value = '';
+  document.getElementById('description').value = '';
+  document.getElementById('qrStatus').textContent = 'اضغط 📷 لتصوير كود ZATCA';
+  document.getElementById('qrStatus').style.color = '#718096';
   document.getElementById('gpsStatus').className = 'gps-status';
   document.getElementById('gpsBtn').textContent = '📡';
   updateProgress();
