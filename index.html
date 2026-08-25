@@ -204,18 +204,18 @@ textarea { min-height: 80px; resize: none; line-height: 1.5; }
       <div class="field">
         <label><span class="req">*</span>الوصف الرئيسي</label>
         <div class="select-wrap">
-          <select id="descSelect" onchange="onDescChange()" style="margin-bottom:8px">
+          <select id="descSelect" onchange="handleDescChange()">
             <option value="">— اختر الوصف —</option>
-            <option>مضخة الكهرباء</option>
-            <option>مضخة الديزل</option>
-            <option>المضخة التعويضية</option>
-            <option>لوحة مضخة الكهرباء</option>
-            <option>لوحة مضخة الديزل</option>
-            <option>لوحة المضخة التعويضية</option>
+            <option value="مضخة الكهرباء">مضخة الكهرباء</option>
+            <option value="مضخة الديزل">مضخة الديزل</option>
+            <option value="المضخة التعويضية">المضخة التعويضية</option>
+            <option value="لوحة مضخة الكهرباء">لوحة مضخة الكهرباء</option>
+            <option value="لوحة مضخة الديزل">لوحة مضخة الديزل</option>
+            <option value="لوحة المضخة التعويضية">لوحة المضخة التعويضية</option>
             <option value="other">أخرى</option>
           </select>
         </div>
-        <input type="text" id="description" placeholder="اكتب الوصف هنا" style="display:none" oninput="updateProgress()">
+        <input type="text" id="descOther" placeholder="أدخل الوصف" style="display:none;margin-top:8px" oninput="syncDesc()">
       </div>
       <div class="field-row">
         <div class="field"><label>العلامة التجارية</label><input type="text" id="brand" placeholder="ماركة"></div>
@@ -448,7 +448,7 @@ function updateProgress() {
     document.getElementById('zone').value,
     document.getElementById('buildingName').value,
     document.getElementById('assetType').value,
-    document.getElementById('description').value,
+    getDescription(),
     document.querySelector('input[name="opStatus"]:checked'),
     document.querySelector('input[name="condition"]:checked'),
     document.getElementById('qty').value,
@@ -505,7 +505,7 @@ async function submitForm() {
   if (!document.getElementById('zone').value) { showToast('⚠️ أدخل المنطقة التابعة للمبنى', 'error'); return; }
   if (!document.getElementById('buildingName').value) { showToast('⚠️ أدخل اسم المبنى', 'error'); return; }
   if (!assetType) { showToast('⚠️ اختر نوع الأصل', 'error'); return; }
-  if (!document.getElementById('description').value) { showToast('⚠️ اختر الوصف الرئيسي', 'error'); return; }
+  if (!getDescription()) { showToast('⚠️ اختر الوصف الرئيسي', 'error'); return; }
   if (!opStatus)  { showToast('⚠️ اختر الحالة التشغيلية', 'error'); return; }
   if (!condition) { showToast('⚠️ اختر حالة الأصل', 'error'); return; }
 
@@ -522,7 +522,7 @@ async function submitForm() {
     roomNum:      document.getElementById('roomNum').value,
     roomCode:     document.getElementById('roomCode').value,
     assetType:    assetType,
-    description:  document.getElementById('description').value || document.getElementById('descSelect').value,
+    description:  getDescription(),
     brand:        document.getElementById('brand').value,
     model:        document.getElementById('model').value,
     serial:       document.getElementById('serial').value,
@@ -580,31 +580,14 @@ async function submitForm() {
   btn.disabled = false; btn.textContent = '✅ إرسال البيانات';
 }
 
-function handleDescChange() {
-  const sel = document.getElementById('descSelect').value;
-  const other = document.getElementById('descOther');
-  const hidden = document.getElementById('description');
-  if (sel === 'أخرى') {
-    other.style.display = 'block';
-    other.focus();
-    hidden.value = other.value;
-  } else {
+ else {
     other.style.display = 'none';
-    hidden.value = sel;
   }
   updateProgress();
 }
 
 // مزامنة حقل الوصف الآخر مع الحقل المخفي
-document.addEventListener('DOMContentLoaded', function() {
-  const other = document.getElementById('descOther');
-  if (other) {
-    other.addEventListener('input', function() {
-      document.getElementById('description').value = this.value;
-      updateProgress();
-    });
-  }
-});
+
 
 // مسح QR Code من الصورة
 async function scanQR(input) {
@@ -647,6 +630,28 @@ async function scanQR(input) {
   }
 }
 
+function handleDescChange() {
+  const val = document.getElementById('descSelect').value;
+  const other = document.getElementById('descOther');
+  if (val === 'other') {
+    other.style.display = 'block';
+    other.focus();
+  } else {
+    other.style.display = 'none';
+  }
+  updateProgress();
+}
+
+function syncDesc() {
+  updateProgress();
+}
+
+function getDescription() {
+  const val = document.getElementById('descSelect').value;
+  if (val === 'other') return document.getElementById('descOther').value.trim();
+  return val;
+}
+
 function resetForm() {
   ['siteName','siteNum','zone','buildingName','buildingNum','floorNum','roomNum',
    'roomCode','assetType','description','brand','model','serial','year','dept',
@@ -665,7 +670,6 @@ function resetForm() {
   document.getElementById('descSelect').value = '';
   document.getElementById('descOther').style.display = 'none';
   document.getElementById('descOther').value = '';
-  document.getElementById('description').value = '';
   document.getElementById('qrStatus').textContent = 'اضغط 📷 لتصوير كود ZATCA';
   document.getElementById('qrStatus').style.color = '#718096';
   document.getElementById('gpsStatus').className = 'gps-status';
